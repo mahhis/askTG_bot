@@ -1,0 +1,8 @@
+name: English
+start: |
+  Currently access to the bot is limited, click the "join" button and we will add you to the waiting list.
+language: Please, select the language.
+language_selected: <b>This bot</b> now speaks English.
+join_btn: Add
+already_in: |
+  You are on the waiting list
