@@ -9,16 +9,24 @@ import bot from '@/helpers/bot'
 import configureI18n from '@/middlewares/configureI18n'
 import handleLanguage from '@/handlers/language'
 import i18n from '@/helpers/i18n'
-import join from '@/handlers/join'
-import languageMenu from '@/menus/language'
+import languageMenu from '@/menus/inline/language'
 import sendStart from '@/handlers/start'
 import startMongo from '@/helpers/startMongo'
+import selectStep from './handlers/selectStep'
+import { createClient } from './helpers/tgAPI'
+import { selectUserGroup } from './menus/inline/showUserGroup'
+import { selectSummaryPeriod } from './menus/inline/summary'
 
 async function runApp() {
+  
   console.log('Starting app...')
+  // User
+  await createClient()
+  console.log('User bot connected')
   // Mongo
   await startMongo()
   console.log('Mongo connected')
+
   bot
     // Middlewares
     .use(sequentialize())
@@ -29,10 +37,15 @@ async function runApp() {
     // Menus
     .use(languageMenu)
   // Commands
-  bot.callbackQuery(['join'], join)
-
   bot.command(['start'], sendStart)
   bot.command('language', handleLanguage)
+  bot.on('message', selectStep)
+
+  bot.callbackQuery(['previous_my', 'next_my', 'change_words', 'delete', 'summary'], selectUserGroup)
+  bot.callbackQuery(['1h', '24h', '2d','7d',], selectSummaryPeriod)
+
+
+
   // Errors
   bot.catch(console.error)
   // Start bot

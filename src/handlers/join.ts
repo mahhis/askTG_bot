@@ -1,10 +1,11 @@
 import Context from '@/models/Context'
 
-export default async function join(ctx: Context) {
-  ctx.dbuser.inWaitingList = true
+export default async function handleJoinWaitList(ctx: Context) {
+  ctx.dbuser.inWaitList = 'WAITING'
+  ctx.dbuser.step = 'start'
   await ctx.dbuser.save()
-  return ctx.editMessageWithLocalization('already_in', {
+  return ctx.replyWithLocalization('already_in', {
     parse_mode: 'HTML',
-    reply_markup: undefined,
+    reply_markup: { remove_keyboard: true },
   })
 }

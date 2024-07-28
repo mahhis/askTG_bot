@@ -13,13 +13,15 @@
   },
   "dependencies": {
     "@grammyjs/i18n": "^0.5.0",
-    "@grammyjs/menu": "^1.0.4",
+    "@grammyjs/menu": "^1.2.2",
     "@grammyjs/runner": "^1.0.3",
     "dotenv": "^10.0.0",
     "envalid": "^7.2.2",
-    "grammy": "^1.5.0",
-    "grammy-middlewares": "^1.0.11",
-    "mongoose": "^6.1.0"
+    "fast-fuzzy": "^1.12.0",
+    "grammy": "1.27.0",
+    "grammy-middlewares": "1.0.11",
+    "mongoose": "^6.1.0",
+    "telegram": "^2.22.2"
   },
   "devDependencies": {
     "@typegoose/typegoose": "^9.3.1",

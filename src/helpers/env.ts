@@ -9,4 +9,7 @@ dotenv.config({ path: resolve(cwd(), '.env') })
 export default cleanEnv(process.env, {
   TOKEN: str(),
   MONGO: str(),
+  API_HASH: str(),
+  API_ID: str(),
+  SESSION: str(),
 })

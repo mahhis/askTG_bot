@@ -4,6 +4,7 @@ import { load } from 'js-yaml'
 import { readFileSync, readdirSync } from 'fs'
 import { resolve } from 'path'
 import Context from '@/models/Context'
+import getI18nKeyboard from '../custom/default'
 
 interface YamlWithName {
   name: string
@@ -21,9 +22,10 @@ const setLanguage = (languageCode: string) => async (ctx: Context) => {
   ctx.dbuser.language = languageCode
   await ctx.dbuser.save()
   ctx.i18n.locale(languageCode)
-  return ctx.editMessageText(ctx.i18n.t('language_selected'), {
+  await ctx.deleteMessage()
+  return ctx.replyWithLocalization(ctx.i18n.t('language_selected'), {
     parse_mode: 'HTML',
-    reply_markup: undefined,
+    reply_markup: getI18nKeyboard(ctx.dbuser.language, 'main'),
   })
 }
 
