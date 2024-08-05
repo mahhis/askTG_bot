@@ -4,7 +4,7 @@ import { load } from 'js-yaml'
 import { readFileSync, readdirSync } from 'fs'
 import { resolve } from 'path'
 import Context from '@/models/Context'
-import getI18nKeyboard from '../custom/default'
+import getI18nKeyboard from '@/menus/custom/default'
 
 interface YamlWithName {
   name: string

@@ -15,12 +15,16 @@
     "@grammyjs/i18n": "^0.5.0",
     "@grammyjs/menu": "^1.2.2",
     "@grammyjs/runner": "^1.0.3",
+    "big-integer": "^1.6.52",
+    "dayjs": "^1.11.12",
     "dotenv": "^10.0.0",
     "envalid": "^7.2.2",
     "fast-fuzzy": "^1.12.0",
     "grammy": "1.27.0",
     "grammy-middlewares": "1.0.11",
+    "input": "^1.0.1",
     "mongoose": "^6.1.0",
+    "openai": "^4.0.0",
     "telegram": "^2.22.2"
   },
   "devDependencies": {

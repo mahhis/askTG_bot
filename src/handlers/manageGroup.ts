@@ -1,12 +1,12 @@
 import { type Message } from '@grammyjs/types'
 
-import Context from '@/models/Context'
-import sendOptions from '@/helpers/sendOptions'
-import { joinTheGroup } from '@/helpers/tgAPI'
 import { createUserGroupsMenu } from '@/menus/inline/showUserGroup'
+import { joinTheGroup } from '@/helpers/tgAPI'
 import { title } from 'process'
-import i18n from '@/helpers/i18n'
+import Context from '@/models/Context'
 import getI18nKeyboard from '@/menus/custom/default'
+import i18n from '@/helpers/i18n'
+import sendOptions from '@/helpers/sendOptions'
 
 export async function handleAddGroup(ctx: Context) {
   ctx.dbuser.step = 'setup_group'
@@ -18,43 +18,37 @@ export async function handleAddGroup(ctx: Context) {
 }
 
 export async function handleMonitorGroup(ctx: Context) {
-  if(ctx.dbuser.groups.length == 0){
+  if (ctx.dbuser.groups.length == 0) {
     return await ctx.replyWithLocalization('no_group_to_monitor', {
       ...sendOptions(ctx),
       reply_markup: getI18nKeyboard(ctx.dbuser.language, 'cancel'),
-      }) 
-  }else {
+    })
+  } else {
     ctx.dbuser.step = 'select_action_on_group'
     await ctx.dbuser.save()
-    let link = '';
-    if(ctx.dbuser.groups[0].username){
+    let link = ''
+    if (ctx.dbuser.groups[0].username) {
       link = '@' + ctx.dbuser.groups[0].username
     } else {
       link = i18n.t(ctx.dbuser.language, 'absent')
     }
 
-    const words = ctx.dbuser.groups[0].words!.join(', ');
+    const words = ctx.dbuser.groups[0].words!.join(', ')
 
-  
-  return ctx.replyWithLocalization('select_my_group', {
-    ...sendOptions(ctx, {
-      index: 1,
-      length: ctx.dbuser.groups.length,
-      title: ctx.dbuser.groups[0].title,
-      link: link,
-      words: words
-    }),
-    reply_markup: createUserGroupsMenu(
-      ctx,
-      0,
-      ctx.dbuser.groups!.length
-    ),
-  })
-}
+    return ctx.replyWithLocalization('select_my_group', {
+      ...sendOptions(ctx, {
+        index: 1,
+        length: ctx.dbuser.groups.length,
+        title: ctx.dbuser.groups[0].title,
+        link: link,
+        words: words,
+      }),
+      reply_markup: createUserGroupsMenu(ctx, 0, ctx.dbuser.groups!.length),
+    })
+  }
 }
 
 export async function handleLinkToGroup(ctx: Context, msg: Message) {
- 
   const userNameGroup = getLinkToGroup(ctx, msg)
   const res = await joinTheGroup(userNameGroup, ctx)
 
@@ -66,15 +60,14 @@ export async function handleLinkToGroup(ctx: Context, msg: Message) {
   })
 }
 
-
 export function getLinkToGroup(ctx: Context, message: Message) {
-  const groupLinkRegex = /https:\/\/t\.me\/([a-zA-Z0-9_]+)|@([a-zA-Z0-9_]+)/;
+  const groupLinkRegex = /https:\/\/t\.me\/([a-zA-Z0-9_]+)|@([a-zA-Z0-9_]+)/
   if (message.text) {
-    const match = message.text.match(groupLinkRegex);
+    const match = message.text.match(groupLinkRegex)
     if (match) {
-      const username = match[1] || match[2];
-      return username;
+      const username = match[1] || match[2]
+      return username
     }
   }
-  return '';
+  return ''
 }
