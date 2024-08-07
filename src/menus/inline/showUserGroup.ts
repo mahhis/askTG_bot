@@ -27,9 +27,6 @@ export const selectUserGroup = async (ctx: Context) => {
   const group = ctx.dbuser.groups![ctx.dbuser.currentGroupIndex]
 
   if (selection == 'summary') {
-    ctx.dbuser.step = 'select_period_summary'
-    await ctx.dbuser.save()
-
     const summaryPeriodMenu = await createSummaryPeriodMenu(ctx)
     const message = ctx.i18n.t('select_summary_period', {
       ...sendOptions(ctx),
@@ -51,16 +48,17 @@ export const selectUserGroup = async (ctx: Context) => {
   }
 
   if (selection == 'delete') {
-    await removeGroupFromUser(ctx.dbuser.id, group.id)
-
+    await removeGroupFromUser(ctx, ctx.dbuser.id, group.id)
     await ctx.deleteMessage()
     await ctx.replyWithLocalization('group_deleted', {
       ...sendOptions(ctx),
       reply_markup: getI18nKeyboard(ctx.dbuser.language, 'cancel'),
     })
 
-    if (currentSetupingGroups.length - 1 == 0) {
+    if (ctx.dbuser.groups.length == 0) {
       ctx.dbuser.step = 'main_menu'
+      ctx.dbuser.currentGroupIndex = 0
+
       await ctx.dbuser.save()
       return await ctx.replyWithLocalization('no_group_to_monitor', {
         ...sendOptions(ctx),
@@ -73,6 +71,12 @@ export const selectUserGroup = async (ctx: Context) => {
       } else {
         link = i18n.t(ctx.dbuser.language, 'absent')
       }
+
+      ctx.dbuser.step = 'main_menu'
+      ctx.dbuser.currentGroupIndex = 0
+
+      await ctx.dbuser.save()
+
       const words = ctx.dbuser.groups[0].words!.join(', ')
       return await ctx.replyWithLocalization('select_my_group', {
         ...sendOptions(ctx, {
@@ -82,7 +86,11 @@ export const selectUserGroup = async (ctx: Context) => {
           link: link,
           words: words,
         }),
-        reply_markup: getI18nKeyboard(ctx.dbuser.language, 'cancel'),
+        reply_markup: createUserGroupsMenu(
+          ctx,
+          0,
+          ctx.dbuser.groups!.length - 1
+        ),
       })
     }
   }

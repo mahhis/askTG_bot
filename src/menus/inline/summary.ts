@@ -11,49 +11,53 @@ export const selectSummaryPeriod = async (ctx: Context) => {
   const selection = ctx.callbackQuery?.data
   const selectedGroup = ctx.dbuser.groups[ctx.dbuser.currentGroupIndex]
   const now = new Date()
+  //let messagesLastHour: string[] = []
 
-  switch (selection) {
-    case '1h': {
-      const oneHourAgo = dayjs(now).subtract(1, 'hour').toDate()
-      const messagesLastHour = await getMessagesForPeriod(
-        selectedGroup.username!,
-        selectedGroup.id,
-        oneHourAgo
-      )
-      console.log('Messages from the last 1 hour:', messagesLastHour)
-      break
-    }
-    case '1d': {
-      const oneDayAgo = dayjs(now).subtract(1, 'day').toDate()
-      const messagesLastHour = await getMessagesForPeriod(
-        selectedGroup.username!,
-        selectedGroup.id,
-        oneDayAgo
-      )
-      console.log('Messages from the last 1 day:', messagesLastHour)
-      break
-    }
-    case '2d': {
-      const twoDaysAgo = dayjs(now).subtract(2, 'day').toDate()
-      const messagesLastHour = await getMessagesForPeriod(
-        selectedGroup.username!,
-        selectedGroup.id,
-        twoDaysAgo
-      )
-      console.log('Messages from the last 2 day:', messagesLastHour)
-      break
-    }
-    case '7': {
-      const sevenDaysAgo = dayjs(now).subtract(7, 'day').toDate()
-      const messagesLastHour = await getMessagesForPeriod(
-        selectedGroup.username!,
-        selectedGroup.id,
-        sevenDaysAgo
-      )
-      console.log('Messages from the last 7 day', messagesLastHour)
-      break
-    }
-  }
+  // switch (selection) {
+  //   case '1h': {
+  //     const oneHourAgo = dayjs(now).subtract(1, 'hour').toDate()
+  //     messagesLastHour = await getMessagesForPeriod(
+  //       selectedGroup.username!,
+  //       selectedGroup.id,
+  //       oneHourAgo
+  //     )
+  //     //console.log('Messages from the last 1 hour:', messagesLastHour)
+  //     break
+  //   }
+  //   case '1d': {
+  //     const oneDayAgo = dayjs(now).subtract(1, 'day').toDate()
+  //     messagesLastHour = await getMessagesForPeriod(
+  //       selectedGroup.username!,
+  //       selectedGroup.id,
+  //       oneDayAgo
+  //     )
+  //     //console.log('Messages from the last 1 day:', messagesLastHour)
+  //     break
+  //   }
+  //   case '2d': {
+  //     const twoDaysAgo = dayjs(now).subtract(2, 'day').toDate()
+  //     messagesLastHour = await getMessagesForPeriod(
+  //       selectedGroup.username!,
+  //       selectedGroup.id,
+  //       twoDaysAgo
+  //     )
+  //     //console.log('Messages from the last 2 day:', messagesLastHour)
+  //     break
+  //   }
+  //   case '7d': {
+  //     const sevenDaysAgo = dayjs(now).subtract(7, 'day').toDate()
+  //     messagesLastHour = await getMessagesForPeriod(
+  //       selectedGroup.username!,
+  //       selectedGroup.id,
+  //       sevenDaysAgo
+  //     )
+  //     //console.log('Messages from the last 7 day', messagesLastHour)
+  //     break
+  //   }
+  // }
+
+  //const totalCharacterCount = sumCharacterCount(messagesLastHour)
+  //console.log('Total character count:', totalCharacterCount)
 
   const message = ctx.i18n.t('unavailable_function', {
     ...sendOptions(ctx),
@@ -67,6 +71,15 @@ export const selectSummaryPeriod = async (ctx: Context) => {
   })
 }
 
+function sumCharacterCount(messages: string[]): number {
+  if (!messages || !Array.isArray(messages)) {
+    return 0
+  }
+  return messages.reduce(
+    (sum, message) => sum + (typeof message === 'string' ? message.length : 0),
+    0
+  )
+}
 export function createSummaryPeriodMenu(ctx: Context) {
   const selectionMenu = new InlineKeyboard()
 

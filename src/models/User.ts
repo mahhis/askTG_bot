@@ -1,5 +1,5 @@
 import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose'
-
+import Context from '@/models/Context'
 
 export class Group {
   @prop({ required: true })
@@ -14,7 +14,6 @@ export class Group {
   @prop({ type: () => [String] })
   words?: string[]
 }
-
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class User {
@@ -46,21 +45,28 @@ export async function findOrCreateUser(id: number) {
     }
   )
 }
-export async function findUsersByGroupId(groupId: number){
+export async function findUsersByGroupId(groupId: number) {
   const users = await UserModel.find({
     groups: {
-      $elemMatch: { id: groupId }
-    }
+      $elemMatch: { id: groupId },
+    },
   })
 
-  return users;
+  return users
 }
 
-
-export async function removeGroupFromUser(userId: number, groupId: number) {
+export async function removeGroupFromUser(
+  ctx: Context,
+  userId: number,
+  groupId: number
+) {
   await UserModel.updateOne(
     { id: userId },
     { $pull: { groups: { id: groupId } } }
   )
+  const updatedUser = await UserModel.findOne({ id: userId }).exec()
+  if (!updatedUser) {
+    throw new Error(`User with ID ${userId} not found`)
+  }
+  ctx.dbuser = updatedUser
 }
-

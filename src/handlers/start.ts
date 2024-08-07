@@ -15,7 +15,7 @@ export default async function handleStart(ctx: Context) {
   if (ctx.dbuser.inWaitList == 'WAITING') {
     return ctx.replyWithLocalization('already_on_waiting_list', {
       ...sendOptions(ctx),
-      reply_markup: undefined
+      reply_markup: { remove_keyboard: true },
     })
   }
   if (ctx.dbuser.inWaitList == 'ADDED') {

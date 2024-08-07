@@ -1,4 +1,6 @@
+import * as bigInt from 'big-integer'
 import { Api, TelegramClient } from 'telegram'
+import { BigInteger } from 'big-integer'
 import { Group, findUsersByGroupId } from '@/models/User'
 import { Raw } from 'telegram/events'
 import { StringSession } from 'telegram/sessions'
@@ -6,7 +8,6 @@ import { fuzzy } from 'fast-fuzzy'
 import Context from '@/models/Context'
 import env from '@/helpers/env'
 import i18n from '@/helpers/i18n'
-import bigInt = require('big-integer')
 
 let client: TelegramClient
 
@@ -63,7 +64,10 @@ export async function joinTheGroup(name: string, ctx: Context) {
   }
 }
 
-async function getAccessHash(groupName: string, id: bigint) {
+async function getAccessHash(
+  groupName: string,
+  id: BigInteger
+): Promise<BigInteger> {
   try {
     const searchResult = await client.invoke(
       new Api.contacts.Search({
@@ -73,17 +77,17 @@ async function getAccessHash(groupName: string, id: bigint) {
     )
 
     const filteredGroups = searchResult.chats.filter((chat) =>
-      chat.id.equals(bigInt(id))
+      chat.id.equals(id)
     ) as Api.Channel[]
 
     if (filteredGroups.length === 0) {
       console.log('No group found')
-      return null
+      return bigInt(0)
     }
-    return filteredGroups[0].accessHash
+    return bigInt(filteredGroups[0].accessHash!)
   } catch (error) {
     console.error('Error getting group details:', error)
-    return null
+    return bigInt(0)
   }
 }
 
@@ -107,9 +111,9 @@ async function createEventHandler() {
         )
 
         const matchedWords = group!.words!.filter(
-          (_, idx) => fuzzyArr[idx] >= 0.5
+          (_, idx) => fuzzyArr[idx] >= 0.7
         )
-        const matchedScores = fuzzyArr.filter((score) => score >= 0.5)
+        const matchedScores = fuzzyArr.filter((score) => score >= 0.7)
 
         if (matchedWords.length === 0) continue
 
@@ -148,79 +152,46 @@ function hasUsernameAndIsChannel(
   return 'username' in chat && chat.className === 'Channel'
 }
 
-async function getAccessHashById(chatId: bigint) {
-  try {
-    const inputPeerChannel = new Api.InputPeerChannel({
-      channelId: bigInt(chatId),
-      accessHash: bigInt('0'), // Dummy access hash
-    })
-
-    const fullChannel = await client.invoke(
-      new Api.channels.GetFullChannel({
-        channel: inputPeerChannel,
-      })
-    )
-
-    // Find the Channel object with the matching chatId
-    const channel = fullChannel.chats.find((chat) =>
-      chat.id.equals(bigInt(chatId))
-    )
-
-    if (channel && 'accessHash' in channel) {
-      const accessHash = channel.accessHash
-      return {
-        id: chatId,
-        accessHash: accessHash,
-      }
-    } else {
-      console.log('Channel data not available')
-      return null
-    }
-  } catch (error) {
-    console.error('Error getting access hash by chat ID:', error)
-    return null
-  }
-}
-
 export async function getMessagesForPeriod(
   groupUsername: string,
   chatId: number,
   fromTime: Date
 ) {
-  const fromTimestamp = Math.floor(fromTime.getTime() / 1000) // Convert to Unix timestamp
-  const messages: Api.Message[] = []
+  const fromTimestamp = Math.floor(fromTime.getTime() / 1000)
+  const messages: string[] = []
   let offsetId = 0
 
   while (true) {
+    const accessHash = await getAccessHash(groupUsername, bigInt(chatId))!
     const peer = new Api.InputPeerChannel({
       channelId: bigInt(chatId),
-      accessHash: bigInt(/*getAccessHash(groupUsername, chatId)*/),
-    }) // Use actual accessHash if available
+      accessHash: accessHash,
+    })
 
-    //console.log(getAccessHashById(bigInt(chatId)))
-
-    const history = await client.invoke(
+    const history: Api.messages.TypeMessages = await client.invoke(
       new Api.messages.GetHistory({
         peer: peer,
         offsetId: offsetId,
         limit: 100,
       })
     )
-
-    if (history instanceof Api.messages.Messages) {
+    if (history instanceof Api.messages.ChannelMessages) {
       for (const message of history.messages) {
         if ('date' in message && message.date >= fromTimestamp) {
-          messages.push(message as Api.Message)
+          messages.push(message.message as string)
         } else {
           return messages
         }
       }
 
-      offsetId = history.messages[history.messages.length - 1].id
+      if (history.messages.length > 0) {
+        offsetId = history.messages[history.messages.length - 1].id
+      } else {
+        break
+      }
     } else {
       break
     }
   }
-
   return messages
 }

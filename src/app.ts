@@ -6,6 +6,7 @@ import { createClient } from '@/helpers/tgAPI'
 import { ignoreOld, sequentialize } from 'grammy-middlewares'
 import { run } from '@grammyjs/runner'
 //import { selectSummaryPeriod } from '@/menus/inline/summary'
+import { selectSummaryPeriod } from '@/menus/inline/summary'
 import { selectUserGroup } from '@/menus/inline/showUserGroup'
 import attachUser from '@/middlewares/attachUser'
 import bot from '@/helpers/bot'
@@ -44,7 +45,7 @@ async function runApp() {
     ['previous_my', 'next_my', 'change_words', 'delete', 'summary'],
     selectUserGroup
   )
-  //bot.callbackQuery(['1h', '1d', '2d', '7d'], selectSummaryPeriod)
+  bot.callbackQuery(['1h', '1d', '2d', '7d'], selectSummaryPeriod)
 
   // Errors
   bot.catch(console.error)

@@ -10,16 +10,17 @@ export default function getI18nKeyboard(lng: string, type: string) {
         .text(i18n.t(lng, 'add_group_btn'))
         .row()
         .text(i18n.t(lng, 'monitor_groups_btn'))
-        .row()
-        .text(i18n.t(lng, 'cancel'))
-        .resized()  
+        .resized()
+      return keyboard
+    case 'main_menu':
+      keyboard = new Keyboard().text(i18n.t(lng, 'main_menu_btn')).resized()
       return keyboard
     case 'wait_list':
       keyboard = new Keyboard()
         .text(i18n.t(lng, 'join_btn'))
         .row()
         .text(i18n.t(lng, 'cancel'))
-        .resized()  
+        .resized()
       return keyboard
     case 'finish':
       keyboard = new Keyboard()
@@ -27,6 +28,6 @@ export default function getI18nKeyboard(lng: string, type: string) {
         .row()
         .text(i18n.t(lng, 'cancel'))
         .resized()
-      return keyboard    
+      return keyboard
   }
 }

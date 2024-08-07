@@ -13,7 +13,7 @@ export async function handleAddGroup(ctx: Context) {
   await ctx.dbuser.save()
   return ctx.replyWithLocalization('send_link', {
     ...sendOptions(ctx),
-    reply_markup: { remove_keyboard: true },
+    reply_markup: getI18nKeyboard(ctx.dbuser.language, 'main_menu'),
   })
 }
 
@@ -21,11 +21,9 @@ export async function handleMonitorGroup(ctx: Context) {
   if (ctx.dbuser.groups.length == 0) {
     return await ctx.replyWithLocalization('no_group_to_monitor', {
       ...sendOptions(ctx),
-      reply_markup: getI18nKeyboard(ctx.dbuser.language, 'cancel'),
+      reply_markup: getI18nKeyboard(ctx.dbuser.language, 'main'),
     })
   } else {
-    ctx.dbuser.step = 'select_action_on_group'
-    await ctx.dbuser.save()
     let link = ''
     if (ctx.dbuser.groups[0].username) {
       link = '@' + ctx.dbuser.groups[0].username
@@ -50,13 +48,27 @@ export async function handleMonitorGroup(ctx: Context) {
 
 export async function handleLinkToGroup(ctx: Context, msg: Message) {
   const userNameGroup = getLinkToGroup(ctx, msg)
-  const res = await joinTheGroup(userNameGroup, ctx)
+
+  const groupExists = ctx.dbuser.groups.some(
+    (group) => group.username === userNameGroup
+  )
+
+  if (groupExists) {
+    ctx.dbuser.step = 'main_menu'
+    await ctx.dbuser.save()
+    return ctx.replyWithLocalization('group_already_exists', {
+      ...sendOptions(ctx),
+      reply_markup: getI18nKeyboard(ctx.dbuser.language, 'main'),
+    })
+  }
+
+  await joinTheGroup(userNameGroup, ctx)
 
   ctx.dbuser.step = 'setup_words'
   await ctx.dbuser.save()
   return ctx.replyWithLocalization('setup_words', {
     ...sendOptions(ctx),
-    reply_markup: { remove_keyboard: true },
+    reply_markup: getI18nKeyboard(ctx.dbuser.language, 'main_menu'),
   })
 }
 

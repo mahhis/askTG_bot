@@ -63,3 +63,9 @@ twenty_four_hours_btn: 24 hours
 two_days_btn: 2 days
 seven_days__btn: 7 days
 unavailable_function: We apologize, this feature is currently unavailable.
+group_already_exists: |
+ You are already tracking this group
+
+ If you want to stop tracking or change the set of tracked words,
+ then click the "Monitored groups" button
+main_menu_btn: Main menu

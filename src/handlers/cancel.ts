@@ -5,6 +5,7 @@ import sendOptions from '@/helpers/sendOptions'
 
 export default async function handleCancel(ctx: Context) {
   ctx.dbuser.step = 'main_menu'
+  ctx.dbuser.currentGroupIndex = 0
   await ctx.dbuser.save()
   return ctx.replyWithLocalization('cancel_selected', {
     ...sendOptions(ctx),
