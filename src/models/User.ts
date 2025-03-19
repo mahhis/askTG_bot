@@ -29,8 +29,6 @@ export class User {
   groups!: Group[]
   @prop({ default: 0 })
   currentGroupIndex!: number
-  @prop({ required: true, default: 'NOT' }) // NOT, WAITING, ADDED
-  inWaitList!: string
 }
 
 const UserModel = getModelForClass(User)

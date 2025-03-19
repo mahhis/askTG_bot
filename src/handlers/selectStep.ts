@@ -8,7 +8,6 @@ import {
 import { handleAddWords, handleChangeWords } from '@/handlers/words'
 import Context from '@/models/Context'
 import handleCancel from '@/handlers/cancel'
-import handleJoinWaitList from '@/handlers/join'
 import handleStart from '@/handlers/start'
 import i18n from '@/helpers/i18n'
 
@@ -32,11 +31,6 @@ export default async function selectStep(ctx: Context) {
         return await handleMonitorGroup(ctx)
       }
       break
-    case 'wait_list':
-      if (isJoin(ctx, message)) {
-        return await handleJoinWaitList(ctx)
-      }
-      break
     case 'setup_group':
       if (getLinkToGroup(ctx, message)) {
         return await handleLinkToGroup(ctx, message)
@@ -56,9 +50,6 @@ function isCancel(ctx: Context, message: Message) {
 }
 function isMainMenu(ctx: Context, message: Message) {
   return message.text == i18n.t(ctx.dbuser.language, 'main_menu_btn')
-}
-function isJoin(ctx: Context, message: Message) {
-  return message.text == i18n.t(ctx.dbuser.language, 'join_btn')
 }
 function isAddGroup(ctx: Context, message: Message) {
   return message.text == i18n.t(ctx.dbuser.language, 'add_group_btn')

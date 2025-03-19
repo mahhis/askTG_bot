@@ -2,7 +2,6 @@ import { type Message } from '@grammyjs/types'
 
 import { createUserGroupsMenu } from '@/menus/inline/showUserGroup'
 import { joinTheGroup } from '@/helpers/tgAPI'
-import { title } from 'process'
 import Context from '@/models/Context'
 import getI18nKeyboard from '@/menus/custom/default'
 import i18n from '@/helpers/i18n'
@@ -62,7 +61,14 @@ export async function handleLinkToGroup(ctx: Context, msg: Message) {
     })
   }
 
-  await joinTheGroup(userNameGroup, ctx)
+  const success = await joinTheGroup(userNameGroup, ctx)
+
+  if (!success) {
+    return ctx.replyWithLocalization('no_able_to_join', {
+      ...sendOptions(ctx),
+      reply_markup: getI18nKeyboard(ctx.dbuser.language, 'main_menu'),
+    })
+  }
 
   ctx.dbuser.step = 'setup_words'
   await ctx.dbuser.save()

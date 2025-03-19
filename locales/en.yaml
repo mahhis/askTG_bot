@@ -4,9 +4,9 @@ start: |
 language: Please, select the language.
 language_selected: <b>This bot</b> now speaks English.
 main_menu: |
- Add group - add a new group to track and receive summaries
+ Add group - add a new group to track
  
- Monitored groups - stop monitoring, change monitored words or get summary
+ Monitored groups - stop monitoring, change monitored words
 already_in: |
   You are on the waiting list
 add_group_btn: Add group
@@ -14,7 +14,7 @@ monitor_groups_btn: Monitored groups
 send_link: |
  Send a link to the group you want to follow.
 
- Example of a correct link: https://t.me/askTG_chat or @askTG_chat
+ Example of a correct link: https://t.me/search_lead_chat or @search_lead_chat
 not_yet_on_waiting_list: |
  This function is available to a limited number of users. Add yourself to the waitlist and you will be notified as soon as it is your turn. 
  To do this, click the "Join" button.
@@ -50,6 +50,8 @@ select_my_group: |
 
  Tracked words: ${data.words} 
 absent: absent
+no_able_to_join: | 
+ Such a group was not found or there is no free entry to it
 delete_group_btn: Delete group
 group_deleted: The group is no longer monitored.
 no_group_to_monitor: You don't have any monitored groups.
@@ -57,7 +59,6 @@ change_words_btn: Change words
 words_changed: Words have been changed
 new_words_for_group: Write a new set of words to track
 select_summary_period: How recent a period of time would you like to receive a summary for?
-summary_btn: Summary
 one_hour_btn: 1 hour
 twenty_four_hours_btn: 24 hours
 two_days_btn: 2 days

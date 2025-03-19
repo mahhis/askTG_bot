@@ -2,12 +2,17 @@ const { TelegramClient } = require('telegram')
 const { StringSession } = require('telegram/sessions')
 const input = require('input')
 const stringSession = new StringSession('')
-import env from '@/helpers/env'
-const lunchClient = async () => {
+
+const startClient = async () => {
   console.log('Loading interactive example...')
-  const client = new TelegramClient(stringSession, +env.API_ID, env.API_HASH, {
-    connectionRetries: 5,
-  })
+  const client = new TelegramClient(
+    stringSession,
+    +'26840762',
+    '2f77edb04c732fe250df087c2b2853c9',
+    {
+      connectionRetries: 5,
+    }
+  )
 
   await client.start({
     phoneNumber: async () =>
@@ -22,4 +27,7 @@ const lunchClient = async () => {
   console.log('Session string:', client.session.save()) // Save this string to avoid logging in again
   await client.sendMessage('me', { message: 'Hello!' })
 }
-await lunchClient()
+
+;(async () => {
+  await startClient()
+})()

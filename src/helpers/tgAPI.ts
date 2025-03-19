@@ -39,8 +39,9 @@ export async function joinTheGroup(name: string, ctx: Context) {
 
     if (!filteredGroups.length) {
       console.log('No group found')
-      return
+      return false
     }
+
     try {
       await client.invoke(
         new Api.channels.JoinChannel({
@@ -55,12 +56,14 @@ export async function joinTheGroup(name: string, ctx: Context) {
       }
       ctx.dbuser.groups.push(tempGroup)
       await ctx.dbuser.save()
+      return true
     } catch (e) {
       console.log('no able to join')
+      return false
     }
   } catch (error) {
     console.error('Error joining the group:', error)
-    return []
+    return false
   }
 }
 
@@ -102,45 +105,45 @@ async function createEventHandler() {
     const users = await findUsersByGroupId(groupId)
 
     for (const user of users) {
-      for (const group of user.groups) {
-        const fuzzyArr = group!.words!.map((word) =>
-          fuzzy(word, msg.message, {
-            ignoreCase: true,
-            normalizeWhitespace: true,
-          })
-        )
+      const group = user.groups.find((g) => g.id === groupId)
+      if (!group) return
 
-        const matchedWords = group!.words!.filter(
-          (_, idx) => fuzzyArr[idx] >= 0.7
-        )
-        const matchedScores = fuzzyArr.filter((score) => score >= 0.7)
+      const fuzzyArr = group.words!.map((word) =>
+        fuzzy(word, msg.message, {
+          ignoreCase: true,
+          normalizeWhitespace: true,
+        })
+      )
 
-        if (matchedWords.length === 0) continue
+      const matchedWords = group.words!.filter((_, idx) => fuzzyArr[idx] >= 0.7)
 
-        const messageLink = `https://t.me/c/${groupId}/${msg.id}` // Generate the message link
+      const matchedScores = fuzzyArr.filter((score) => score >= 0.7)
 
-        try {
-          const matchMessage = i18n.t(user.language, 'match', {
-            title: group.title,
-            message: msg.message,
-            matches: matchedWords
-              .map(
-                (word, idx) =>
-                  `▫️ ${word} - ${(matchedScores[idx] * 100).toFixed(1)}%`
-              )
-              .join('\n'),
-            messageLink,
-          })
+      if (matchedWords.length === 0) return
 
-          const message = `<b>${matchMessage}</b>`
+      const messageLink = `https://t.me/c/${groupId}/${msg.id}`
 
-          await client.sendMessage(user.username, {
-            message,
-            parseMode: 'html',
-          })
-        } catch (e) {
-          console.log('An error occurred while sending the message:', e)
-        }
+      try {
+        const matchMessage = i18n.t(user.language, 'match', {
+          title: group.title,
+          message: msg.message,
+          matches: matchedWords
+            .map(
+              (word, idx) =>
+                `▫️ ${word} - ${(matchedScores[idx] * 100).toFixed(1)}%`
+            )
+            .join('\n'),
+          messageLink,
+        })
+
+        const message = `<b>${matchMessage}</b>`
+
+        await client.sendMessage(user.username, {
+          message,
+          parseMode: 'html',
+        })
+      } catch (e) {
+        console.log('An error occurred while sending the message:', e)
       }
     }
   }, new Raw({}))

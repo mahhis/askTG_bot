@@ -154,9 +154,6 @@ export function createUserGroupsMenu(
   } else {
     selectionMenu.text(nextButtonText, 'next_my').row()
   }
-  selectionMenu
-    .text(i18n.t(ctx.dbuser.language, 'summary_btn'), 'summary')
-    .row()
 
   selectionMenu
     .text(i18n.t(ctx.dbuser.language, 'change_words_btn'), 'change_words')

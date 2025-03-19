@@ -42,7 +42,7 @@ async function runApp() {
   bot.on('message', selectStep)
 
   bot.callbackQuery(
-    ['previous_my', 'next_my', 'change_words', 'delete', 'summary'],
+    ['previous_my', 'next_my', 'change_words', 'delete'],
     selectUserGroup
   )
   bot.callbackQuery(['1h', '1d', '2d', '7d'], selectSummaryPeriod)
