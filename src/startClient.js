@@ -1,14 +1,17 @@
 const { TelegramClient } = require('telegram')
 const { StringSession } = require('telegram/sessions')
 const input = require('input')
+require('dotenv').config()
+
 const stringSession = new StringSession('')
 
 const startClient = async () => {
   console.log('Loading interactive example...')
+
   const client = new TelegramClient(
     stringSession,
-    +'26840762',
-    '2f77edb04c732fe250df087c2b2853c9',
+    +`${process.env.API_ID}`,
+    `${process.env.API_HASH}`,
     {
       connectionRetries: 5,
     }
